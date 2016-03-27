@@ -179,11 +179,27 @@
 	<button class="levelStart">show level2 start point</button>
 	<button class="levelStart">show level3 start point</button>
 	<button class="levelStart">show level4 start point</button>
+	<button class="hidelevelStart">hide all level start point</button>
 	</p>
 </div>
 </body>
 
 <script type="text/javascript">
+
+	var defaultColor = "blue"
+	var defaultBackColor = "white"
+
+	const LEVEL1COLOR = "#ffffff"
+	const LEVEL1BACKCOLOR = "#00FA9A"
+
+	const LEVEL2COLOR = "#ffffff"
+	const LEVEL2BACKCOLOR = "#9ACD32"
+
+	const LEVEL3COLOR = "#ffffff"
+	const LEVEL3BACKCOLOR = "#FFA500"
+
+	const LEVEL4COLOR = "#ffffff"
+	const LEVEL4BACKCOLOR = "#000080"
 
 	$("td").click(function(){
 		$(this).find("input").show()
@@ -232,10 +248,23 @@
 		var j = orderLevelStartArr[levelInt]["j"]
 
 		if(parseInt(i)>=0 && parseInt(j)>=0 ){
-			showStartPoint(i,j)
+			showStartPoint(i,j,levelInt)
+		}
+	})
+
+	$(".hidelevelStart").click(function(){
+		for(var k=0;k<orderLevelStartArr.length;k++){
+				var i = orderLevelStartArr[k]["i"]
+				var j = orderLevelStartArr[k]["j"]
+		
+
+		if(parseInt(i)>=0 && parseInt(j)>=0 ){
+			findElementByIJ(i,j).css("background",defaultBackColor)
+			findElementByIJ(i,j).find(".txt").css("color",defaultColor)
 		}
 
-		
+		}
+
 	})
 
 	$(".breaklevel").click(function(){
@@ -274,8 +303,9 @@
 
 	}
 
-	function showStartPoint(i,j){
-		findElementByIJ(i,j).css("background","green")
+	function showStartPoint(i,j,levelInt){
+
+		findElementByIJ(i,j).css("background",eval("LEVEL"+(levelInt+1)+"BACKCOLOR"))
 		findElementByIJ(i,j).find(".txt").css("color","white")
 
 	}
