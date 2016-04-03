@@ -179,6 +179,7 @@
 	<button class="levelPrev">show level1 prev point</button>
 	<button class="levelNext">show level1 next point</button>
 	<button class="levelEnd">show level1 end point</button>
+	<button class="levelHide">hide level1 point</button>
 	</p>
 </div>
 
@@ -188,6 +189,7 @@
 	<button class="levelPrev">show level2 prev point</button>
 	<button class="levelNext">show level2 next point</button>
 	<button class="levelEnd">show level2 end point</button>
+	<button class="levelHide">hide level2 point</button>
 	</p>
 </div>
 
@@ -197,6 +199,7 @@
 	<button class="levelPrev">show level3 prev point</button>
 	<button class="levelNext">show level3 next point</button>
 	<button class="levelEnd">show level3 end point</button>
+	<button class="levelHide">hide level3 point</button>
 	</p>
 </div>
 
@@ -206,6 +209,7 @@
 	<button class="levelPrev">show level4 prev point</button>
 	<button class="levelNext">show level4 next point</button>
 	<button class="levelEnd">show level4 end point</button>
+	<button class="levelHide">hide level4 point</button>
 	</p>
 </div>
 
@@ -224,7 +228,7 @@
 
 	var orderLevelStartArr = [{},{},{},{}];//In the array there exists every level's first element
 
-	var hightLightStatusArr = [-1,-1,-1,-1]
+	var hightLightStatusArr = [-1,-1,-1,-1];//In the array there exists the index of the current highlight cell for each level
 
 	const LEVEL1COLOR = "#ffffff"
 	const LEVEL1BACKCOLOR = "#00FA9A"
@@ -248,7 +252,6 @@
 	})
 
 	$("input").change(function(){
-
 			var txt = $(this).val()
 			addIntoLevelArr($(this).parents("tr").index(),$(this).parents("td").index(),txt)
 			addIntoLevelOrderArr($(this).parents("tr").index(),$(this).parents("td").index(),txt)
@@ -256,10 +259,12 @@
 			$(this).siblings(".txt").show()
 			$(this).hide()
 			$(this).val("")
-		
 	})
 
-
+	$("input").blur(function(){
+			$(this).hide()
+			$(this).siblings(".txt").show()
+	})
 
 	$(".level").click(function(){
 		var levelInt = parseInt($(this).index())
@@ -297,7 +302,7 @@
 
 	$(".levelEnd").click(function(){
 		var levelInt = parseInt($(".levelEnd").index(this))
-		if(!eval("level"+(levelInt+1)+"OrderArr").slice(-1)){
+		if(!eval("level"+(levelInt+1)+"OrderArr").slice(-1)[0]){
 			return false;
 		}
 
@@ -317,10 +322,29 @@
 
 	})
 
+	$(".levelHide").click(function(){
+		var levelInt = parseInt($(".levelHide").index(this))
+
+		var arr = ["level1OrderArr","level2OrderArr","level3OrderArr","level4OrderArr"]
+
+		if(eval(arr[levelInt]).length == 0) return false;
+		if(hightLightStatusArr[levelInt] == -1) return false;
+
+		var _i = eval(arr[levelInt])[hightLightStatusArr[levelInt]]["i"]
+		var _j = eval(arr[levelInt])[hightLightStatusArr[levelInt]]["j"]
+		hideHightLightByIJ(_i,_j)
+
+		hightLightStatusArr[levelInt] = -1
+	})
+
 	$(".levelNext").click(function(){
 		var levelNext = parseInt($(".levelNext").index(this))
 
 		var _k = hightLightStatusArr[levelNext]
+
+		if(eval("level"+(levelNext+1)+"OrderArr").length==0){
+			return false;
+		}
 
 		//找到最后一个点时就不往后面找了
 		if(_k == (eval("level"+(levelNext+1)+"OrderArr").length-1)){
@@ -354,6 +378,12 @@
 
 		var _k = hightLightStatusArr[levelPrev]
 		
+
+		if(eval("level"+(levelPrev+1)+"OrderArr").length==0){
+			return false;
+		}
+
+
 		//找到第一个点时就不能往前找了
 		if(_k == 0){
 			return false;
@@ -389,25 +419,41 @@
 	}
 
 	$(".hidelevelStart").click(function(){
-		for(var k=0;k<orderLevelStartArr.length;k++){
-				var i = orderLevelStartArr[k]["i"]
-				var j = orderLevelStartArr[k]["j"]
-		
-			hightLightStatusArr[k] = -1
-		if(parseInt(i)>=0 && parseInt(j)>=0 ){
-			findElementByIJ(i,j).css("background",defaultBackColor)
-			findElementByIJ(i,j).find(".txt").css("color",defaultColor)
+
+		var arr = ["level1OrderArr","level2OrderArr","level3OrderArr","level4OrderArr"]
+
+		for(var i=0;i<arr.length;i++){
+			if(hightLightStatusArr[i]==0){
+				var _i = eval(arr[i])[0]["i"]
+				var _j = eval(arr[i])[0]["j"]
+				hideHightLightByIJ(_i,_j)
+				hightLightStatusArr[i] = -1
+			}
 		}
-
-		}
-
-
-
 	})
+
+
+	$(".hidelevelEnd").click(function(){
+		var arr = ["level1OrderArr","level2OrderArr","level3OrderArr","level4OrderArr"]
+
+		for(var i=0;i<arr.length;i++){
+			if(eval(arr[i]).length==0) continue;
+			if(hightLightStatusArr[i]==(eval(arr[i]).length-1)){
+				var _i = eval(arr[i]).slice(-1)[0]["i"]
+				var _j = eval(arr[i]).slice(-1)[0]["j"]
+				hideHightLightByIJ(_i,_j)
+				hightLightStatusArr[i] = -1
+			}
+		}
+	})
+
 
 	$(".breaklevel").click(function(){
 		cancelLevelTo(-1)
 		showLevel(-1)
+
+		clearAllHightLight()
+
 
 		 level1OrderArr =  new Array();
 
@@ -416,9 +462,25 @@
  		 level3OrderArr =  new Array();
 
  		 level4OrderArr =  new Array();
-
-		delete window.levelInt
+		
+		 hightLightStatusArr = [-1,-1,-1,-1];
+		 
+		 delete window.levelInt
 	})
+
+	function clearAllHightLight(){
+		var arr = ["level1OrderArr","level2OrderArr","level3OrderArr","level4OrderArr"]
+
+
+		for(var i=0;i<hightLightStatusArr.length;i++){
+			if(hightLightStatusArr[i]>-1){
+				var _i = eval(arr[i])[hightLightStatusArr[i]]["i"]
+				var _j = eval(arr[i])[hightLightStatusArr[i]]["j"]
+
+				hideHightLightByIJ(_i,_j)
+			}
+		}
+	}
 
 
 	function checklevelJump(levelInt){
