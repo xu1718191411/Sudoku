@@ -18,7 +18,7 @@
 		height: 50px;
 	}
 
-	input{
+	table input{
 		width:50px;
 		height: 30px;
 		display: none;
@@ -34,6 +34,21 @@
 
 	.txt{
 
+	}
+
+
+	.candidate {
+    display: inline;
+    padding: .2em .6em .3em;
+    font-size: 75%;
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: .25em;
+    background-color: #5bc0de;
 	}
 	</style>
 
@@ -181,6 +196,13 @@
 	<button class="levelEnd">show level1 end point</button>
 	<button class="levelHide">hide level1 point</button>
 	</p>
+
+	<p>
+	<input type="text">
+	<button class="addCandidate">add candidate</button>
+	<button class="showCandidate">show candidate</button>
+
+	</p>
 </div>
 
 <div>
@@ -230,6 +252,8 @@
 
 	var hightLightStatusArr = [-1,-1,-1,-1];//In the array there exists the index of the current highlight cell for each level
 
+	var levelCandidateArr = [[],[],[],[]] //In the array there exists the candidate of each level
+
 	const LEVEL1COLOR = "#ffffff"
 	const LEVEL1BACKCOLOR = "#00FA9A"
 
@@ -251,7 +275,7 @@
 		$(this).find("input").focus()
 	})
 
-	$("input").change(function(){
+	$("table input").change(function(){
 			var txt = $(this).val()
 			addIntoLevelArr($(this).parents("tr").index(),$(this).parents("td").index(),txt)
 			addIntoLevelOrderArr($(this).parents("tr").index(),$(this).parents("td").index(),txt)
@@ -261,7 +285,7 @@
 			$(this).val("")
 	})
 
-	$("input").blur(function(){
+	$("table input").blur(function(){
 			$(this).hide()
 			$(this).siblings(".txt").show()
 	})
@@ -411,6 +435,64 @@
 		hightLightStatusArr[levelPrev] -= 1
 
 	})
+
+	$(".addCandidate").click(function(){
+		var arr = ["level1OrderArr","level2OrderArr","level3OrderArr","level4OrderArr"]
+		var levelCandidate = $(".addCandidate").index(this);
+		if(eval(arr[levelCandidate]).length<=0){
+			return false;
+		}
+
+		var val = $(this).prev("input").val()
+
+		if(!addIntoArrayWithOutDuplicate(val,levelCandidateArr[levelCandidate])) return false;
+
+		$(this).siblings(".showCandidate").after("<span class='candidate'>"+val+"</span>&nbsp;")
+		$(".levelStart").eq(levelCandidate).click()
+	})
+
+
+	jQuery(document).on("click",".candidate",function(){
+		var levelCandidate = $(".addCandidate").index($(this).siblings(".addCandidate"));
+		var val = $(this).text()
+		removeParticularElementFromArray(val,levelCandidateArr[levelCandidate])
+		$(this).remove()
+	})
+
+
+
+	//add a element into One-dimensional　array
+	function addIntoArrayWithOutDuplicate(j,arr){
+			for(var i=0;i<arr.length;i++){
+				if(arr[i] == j) return false;
+			}
+
+			arr.push(j)
+			return true;
+	}
+
+	//remove a particular element from a array
+	function removeParticularElementFromArray(j,arr){
+			var index = findIndexFromArray(j,arr)
+			if(index<0) return false;
+
+				console.log("index is "+index)
+			arr.splice(index,1)
+
+	}
+
+	//find the index of a particular element in a array
+	function findIndexFromArray(j,arr){
+
+			for(var i=0;i<arr.length;i++){
+					if(arr[i] == j) return i;
+			}
+
+			return -1;
+	}
+
+
+
 
 
 	function hideHightLightByIJ(i,j){
