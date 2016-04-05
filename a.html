@@ -523,6 +523,45 @@
 
 	})
 
+	$(".useCandidate").click(function(){
+		var levelCandidate = $(".useCandidate").index(this);
+		if(levelCandidateArr[levelCandidate].length<=0){
+			return false;
+		}
+
+		//如果当前状态第一个单元格显示的不是candidate的话
+		if(firstFirstOrderNum(levelCandidate) == eval("level"+(levelCandidate+1)+"OrderArr")[0]["text"]){
+			return false;
+		}
+
+		//先清楚比当前级别大的级别的假设
+			
+			if(!checklevelJump(levelCandidate)) return false;
+
+			window.levelInt = levelCandidate
+
+		//再把当前的candidate加到levelnOrderArr[0]['text']中
+			eval("level"+(levelCandidate+1)+"OrderArr")[0]["text"] = firstFirstOrderNum(levelCandidate)
+
+		//再把candidate[n]中的要用的对应的candidate删掉
+
+			var index = findIndexFromArray(firstFirstOrderNum(levelCandidate),levelCandidateArr[levelCandidate])
+
+			levelCandidateArr[levelCandidate].splice(index,1)
+
+		//点击显示当前级别第一格按钮
+			$(".levelStart").eq(levelCandidate).click()
+
+		//删除标签中的
+			var obj = $($(this).parents("p")[0]).find(".candidate")
+			for(var i=0;i<obj.length;i++){
+				if($(obj[i]).text()!=firstFirstOrderNum(levelCandidate)) continue;
+				$($(this).parents("p")[0]).find(".candidate").eq(i).click()
+			}
+	})
+
+
+
 
 	function findCurrentFirstOrderCell(level){
 		var i = eval("level"+(level+1)+"OrderArr")[0]["i"];
