@@ -201,6 +201,8 @@
 	<input type="text">
 	<button class="addCandidate">add candidate</button>
 	<button class="showCandidate">show candidate</button>
+	<button class="useCandidate">use current candidate</button>
+	<button class="deleteCandidate">delete current candidate</button>
 
 	</p>
 </div>
@@ -266,6 +268,9 @@
 	const LEVEL4COLOR = "#ffffff"
 	const LEVEL4BACKCOLOR = "#000080"
 
+	const CANDIDATECOLOR = "#ffffff"
+	const CANDIDATEBACKCOLOR = "#7f7f7f"
+
 	$("td").click(function(){
 		$(this).find("input").show()
 		$(this).find(".txt").hide()
@@ -277,6 +282,9 @@
 
 	$("table input").change(function(){
 			var txt = $(this).val()
+			if(!/[1-9]/.exec(txt)){
+				return false;
+			}
 			addIntoLevelArr($(this).parents("tr").index(),$(this).parents("td").index(),txt)
 			addIntoLevelOrderArr($(this).parents("tr").index(),$(this).parents("td").index(),txt)
 			$(this).siblings(".txt").text(textManager(txt))
@@ -308,8 +316,14 @@
 			return false;
 		}
 
-		var i = eval("level"+(levelInt+1)+"OrderArr")[0]["i"];
-		var j = eval("level"+(levelInt+1)+"OrderArr")[0]["j"];
+		//var i = eval("level"+(levelInt+1)+"OrderArr")[0]["i"];
+		//var j = eval("level"+(levelInt+1)+"OrderArr")[0]["j"];
+
+
+		var i = findCurrentFirstOrderCell(levelInt)["i"]
+		var j = findCurrentFirstOrderCell(levelInt)["j"]
+
+		findElementByIJ(i,j).find(".txt").text(eval("level"+(levelInt+1)+"OrderArr")[0]['text'])
 
 		hightLightStatusArr[levelInt] = 0
 
@@ -317,8 +331,9 @@
 			showStartPoint(i,j,levelInt)
 		}
 
+		//去除其他的highLight
 		for(j=eval("level"+(levelInt+1)+"OrderArr").length - 1;j>0;j--){
-			var obj = eval("level"+(levelInt+1)+"OrderArr")[j];
+			var obj = eval("level"+(levelInt+1)+"OrderArr")[j];		
 			hideHightLightByIJ(obj["i"],obj["j"])
 		}
 
@@ -445,10 +460,21 @@
 
 		var val = $(this).prev("input").val()
 
+		if(!/[1-9]/.exec(val)){
+			return false;
+		}
+
+		//如果计划加入的candidate与该level的第一个数相同的话，则什么也不发生
+		if(firstFirstOrderNum(levelCandidate) == val){
+			return false;
+		}
 		if(!addIntoArrayWithOutDuplicate(val,levelCandidateArr[levelCandidate])) return false;
 
 		$(this).siblings(".showCandidate").after("<span class='candidate'>"+val+"</span>&nbsp;")
 		$(".levelStart").eq(levelCandidate).click()
+
+		//清除表单
+		$(this).prev("input").val("")
 	})
 
 
@@ -459,6 +485,59 @@
 		$(this).remove()
 	})
 
+	$(".showCandidate").click(function(){
+		var levelCandidate = $(".showCandidate").index(this);
+		if(levelCandidateArr[levelCandidate].length<=0){
+			return false;
+		}
+
+		for(var i=0;i<levelCandidateArr[levelCandidate].length;i++){
+			//alert(levelCandidateArr[levelCandidate][i])
+		}
+
+		if(!eval("level"+(levelInt+1)+"OrderArr")[0]){
+			return false;
+		}
+
+		var i = findCurrentFirstOrderCell(levelCandidate)["i"]
+		var j = findCurrentFirstOrderCell(levelCandidate)["j"]
+
+		console.log(findElementByIJ(i,j))
+		var element = findElementByIJ(i,j)
+		element.css("background-color",CANDIDATEBACKCOLOR)
+
+		if(!/[1-9]/.exec(element.find(".txt").text())){
+			return false;
+		}
+
+		if(/[1-9]/.exec(element.find(".txt").text())[0] == eval("level"+(levelCandidate+1)+"OrderArr")[0]["text"]){
+			//证明此时显示的是正常的第一个数据而不是candidate数据
+			element.find(".txt").text(levelCandidateArr[levelCandidate][0])
+			
+		}else{
+			var index = findIndexFromArray(/[1-9]/.exec(element.find(".txt").text())[0],levelCandidateArr[levelCandidate])
+			element.find(".txt").text(levelCandidateArr[levelCandidate][(index+1)%levelCandidateArr[levelCandidate].length])
+			//证明此时显示的不是正常的第一个数据而是candidate数据，根据现有的candidate数据判断下一个candidate数据该怎样显示
+			
+		}
+
+	})
+
+
+	function findCurrentFirstOrderCell(level){
+		var i = eval("level"+(level+1)+"OrderArr")[0]["i"];
+		var j = eval("level"+(level+1)+"OrderArr")[0]["j"];
+
+		return {"i":i,"j":j}
+	}
+
+	function firstFirstOrderNum(level){
+		var obj = findCurrentFirstOrderCell(level)
+		var i = obj['i']
+		var j = obj['j']
+		var txt = findElementByIJ(i,j).find(".txt").text()
+		return /[1-9]/.exec(txt)[0]
+	}
 
 
 	//add a element into One-dimensional　array
