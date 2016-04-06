@@ -282,12 +282,14 @@
 
 	$("table input").change(function(){
 			var txt = $(this).val()
-			if(!/[1-9]/.exec(txt)){
+			if(/[1-9]/.exec(txt) || !txt){
+				
+			}else{
 				return false;
 			}
 			addIntoLevelArr($(this).parents("tr").index(),$(this).parents("td").index(),txt)
 			addIntoLevelOrderArr($(this).parents("tr").index(),$(this).parents("td").index(),txt)
-			$(this).siblings(".txt").text(textManager(txt))
+			$(this).siblings(".txt").text(textManagerByLevel(txt,window.levelInt))
 			$(this).siblings(".txt").show()
 			$(this).hide()
 			$(this).val("")
@@ -323,7 +325,7 @@
 		var i = findCurrentFirstOrderCell(levelInt)["i"]
 		var j = findCurrentFirstOrderCell(levelInt)["j"]
 
-		findElementByIJ(i,j).find(".txt").text(eval("level"+(levelInt+1)+"OrderArr")[0]['text'])
+		findElementByIJ(i,j).find(".txt").text(textManagerByLevel(eval("level"+(levelInt+1)+"OrderArr")[0]['text'],levelInt))
 
 		hightLightStatusArr[levelInt] = 0
 
@@ -523,6 +525,39 @@
 
 	})
 
+	$(".deleteCandidate").click(function(){
+		var levelCandidate = $(".deleteCandidate").index(this);
+
+		//如果当前状态第一个单元格显示的不是candidate的话
+		if(firstFirstOrderNum(levelCandidate) == eval("level"+(levelCandidate+1)+"OrderArr")[0]["text"]){
+			return false;
+		}
+
+		//删除标签中的candidate
+			var obj = $($(this).parents("p")[0]).find(".candidate")
+			for(var i=0;i<obj.length;i++){
+				if($(obj[i]).text()!=firstFirstOrderNum(levelCandidate)) continue;
+				$($(this).parents("p")[0]).find(".candidate").eq(i).click()
+			}
+
+		//再让希望删除的candidate从灰色方格中删除掉
+		for(var i=0;i<levelCandidateArr[levelCandidate].length;i++){
+			if(levelCandidateArr[levelCandidate][i] == firstFirstOrderNum(levelCandidate)){
+				levelCandidateArr[levelCandidate].splice(i,1)
+			}
+		}
+
+		//如果所有的candidate都被删掉了的话，那么就显示原始状态下的第一格
+		if(levelCandidateArr[levelCandidate].length<1){
+			$(".levelStart").eq(levelCandidate).click()
+		}
+
+		$(".showCandidate").eq(levelCandidate).click()
+
+
+
+	})
+
 	$(".useCandidate").click(function(){
 		var levelCandidate = $(".useCandidate").index(this);
 		if(levelCandidateArr[levelCandidate].length<=0){
@@ -534,7 +569,7 @@
 			return false;
 		}
 
-		//先清楚比当前级别大的级别的假设
+		//先清除比当前级别大的级别的假设
 			
 			if(!checklevelJump(levelCandidate)) return false;
 
@@ -552,15 +587,45 @@
 		//点击显示当前级别第一格按钮
 			$(".levelStart").eq(levelCandidate).click()
 
-		//删除标签中的
+		//删除标签中的candidate
 			var obj = $($(this).parents("p")[0]).find(".candidate")
 			for(var i=0;i<obj.length;i++){
 				if($(obj[i]).text()!=firstFirstOrderNum(levelCandidate)) continue;
 				$($(this).parents("p")[0]).find(".candidate").eq(i).click()
 			}
+
+		//删除该级别除了第一个以外的其他假设
+
+		deleteCertainLevelExcepTheFirst(levelCandidate)
+
 	})
 
+	function deleteCertainLevelExcepTheFirst(level){
 
+		//处理时间序列
+		//留首元素去掉之后的元素
+		eval("level"+(level+1)+"OrderArr").splice(1,eval("level"+(level+1)+"OrderArr").length-1)
+
+		//处理空间序列
+		var _i = eval("level"+(level+1)+"OrderArr")[0]["i"]
+		var _j = eval("level"+(level+1)+"OrderArr")[0]["j"]
+		var _txt = eval("level"+(level+1)+"OrderArr")[0]['text']
+
+
+		var tmpArr = eval("level"+(level+1)+"Arr")
+		tmpArr[_i][_j] = 0;
+		//去除次级别下空间区域中出了第一块方格以外的其他方格
+		clearCrossNum(tmpArr)
+
+
+		for(var i=0;i<eval("level"+(level+1)+"Arr").length;i++){
+			eval("level"+(level+1)+"Arr")[i] = new Array(9)
+			if(i==_i){
+				eval("level"+(level+1)+"Arr["+_i+"][_j]= "+_txt)
+			}
+		}
+
+	}
 
 
 	function findCurrentFirstOrderCell(level){
@@ -762,29 +827,29 @@
 	/*
 	This function will return the applicable text according to the level status when you are doing the input
 	*/
-	function textManager(txt){
-		if(!txt){
-			return "";
-		}
-		switch(window.levelInt){
-			case 0:
-				return "_"+txt
-			break;
-			case 1:
-				return "__"+txt
-			break;
-			case 2:
-				return "@"+txt
-			break;
-			case 3:
-				return "@@"+txt
-			break;
-			default:
-				return txt
-			break;
-		}
-	}
 
+	function textManagerByLevel(txt,levelN){
+			if(!txt){
+				return "";
+			}
+			switch(levelN){
+				case 0:
+					return "_"+txt
+				break;
+				case 1:
+					return "__"+txt
+				break;
+				case 2:
+					return "@"+txt
+				break;
+				case 3:
+					return "@@"+txt
+				break;
+				default:
+					return txt
+				break;
+			}
+		}
 	/*
 		
 	*/
