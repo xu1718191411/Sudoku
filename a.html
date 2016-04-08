@@ -847,9 +847,13 @@
 			var confirm = window.confirm("level is now in "+window.levelInt+" if you want to go to level "+levelInt+" you should cancel the level that is larger that "+levelInt)
 
 			if(confirm){
+				removeUpperLevelCandidateLabelsFrom(levelInt)
+				cancelCandidateArrTo(levelInt)
 				cancelLevelTo(levelInt)
 				cancelHightLightStatusArrTo(levelInt)
 				cancelOrderLevelTo(levelInt)
+
+				
 				return true;
 			}else{
 				return false;
@@ -1042,6 +1046,23 @@
 				//eval(arr[i]) = []
 				initialArray(arr[i])
 			}
+	}
+
+	function cancelCandidateArrTo(n){
+		for(var i=3;i>n;i--){
+			levelCandidateArr[i] = []
+		}
+	}
+
+	function removeUpperLevelCandidateLabelsFrom(n){
+		var num = 0;
+		for(var i=0;i<=n;i++){
+			num += levelCandidateArr[i].length
+		}
+
+		for(var j=$(".candidate").length-1;j>(num-1);j--){
+			$($(".candidate")[j]).click()
+		}
 	}
 
 	function cancelHightLightStatusArrTo(n){
