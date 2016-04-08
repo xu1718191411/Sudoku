@@ -201,9 +201,9 @@
 	<input type="text">
 	<button class="addCandidate">add candidate</button>
 	<button class="showCandidate">show candidate</button>
+	<button class="hideCandidate">hide candidate</button>
 	<button class="useCandidate">use current candidate</button>
 	<button class="deleteCandidate">delete current candidate</button>
-
 	</p>
 </div>
 
@@ -215,6 +215,16 @@
 	<button class="levelEnd">show level2 end point</button>
 	<button class="levelHide">hide level2 point</button>
 	</p>
+
+	<p>
+	<input type="text">
+	<button class="addCandidate">add candidate</button>
+	<button class="showCandidate">show candidate</button>
+	<button class="hideCandidate">hide candidate</button>
+	<button class="useCandidate">use current candidate</button>
+	<button class="deleteCandidate">delete current candidate</button>
+	</p>
+
 </div>
 
 <div>
@@ -225,6 +235,15 @@
 	<button class="levelEnd">show level3 end point</button>
 	<button class="levelHide">hide level3 point</button>
 	</p>
+
+	<p>
+	<input type="text">
+	<button class="addCandidate">add candidate</button>
+	<button class="showCandidate">show candidate</button>
+	<button class="hideCandidate">hide candidate</button>
+	<button class="useCandidate">use current candidate</button>
+	<button class="deleteCandidate">delete current candidate</button>
+	</p>
 </div>
 
 <div>
@@ -234,6 +253,15 @@
 	<button class="levelNext">show level4 next point</button>
 	<button class="levelEnd">show level4 end point</button>
 	<button class="levelHide">hide level4 point</button>
+	</p>
+
+	<p>
+	<input type="text">
+	<button class="addCandidate">add candidate</button>
+	<button class="showCandidate">show candidate</button>
+	<button class="hideCandidate">hide candidate</button>
+	<button class="useCandidate">use current candidate</button>
+	<button class="deleteCandidate">delete current candidate</button>
 	</p>
 </div>
 
@@ -484,6 +512,12 @@
 		var levelCandidate = $(".addCandidate").index($(this).siblings(".addCandidate"));
 		var val = $(this).text()
 		removeParticularElementFromArray(val,levelCandidateArr[levelCandidate])
+
+		//如果该级别下第一个单元格显示的是目前即将删除的candidate的话，那么将第一个单元格的内容重新设置为levelnOrderArr[0]['text']
+		if(/[1-9]/.exec(firstFirstOrderNum(levelCandidate))[0] == val){
+			recoverFirstCell(levelCandidate)
+		}
+
 		$(this).remove()
 	})
 
@@ -524,6 +558,57 @@
 		}
 
 	})
+
+	$(".hideCandidate").click(function(){
+		var levelCandidate = $(".hideCandidate").index(this);
+		//如果没有设置该级别的假设的话则不触发
+		if(levelCandidateArr[levelCandidate].length<=0){
+			return false;
+		}
+
+		//如果该级别下第一个单元格没有数据的话则不触发
+
+		if(!eval("level"+(levelCandidate+1)+"OrderArr")[0]){
+			return false;
+		}
+
+
+				recoverFirstCell(levelCandidate)
+
+		// var i = findCurrentFirstOrderCell(levelCandidate)["i"]
+		// var j = findCurrentFirstOrderCell(levelCandidate)["j"]
+		// var element = findElementByIJ(i,j)
+
+
+		// if(!(eval("level"+(levelCandidate+1)+"OrderArr")[0]["text"] == /[1-9]/.exec(element.find(".txt").text())[0])){
+		// 	//证明此时显示的不是正常的第一个数据而是candidate数据，根据现有的candidate数据判断下一个candidate数据该怎样显示
+				
+
+
+		// 	element.find(".txt").text(textManagerByLevel(eval("level"+(levelCandidate+1)+"OrderArr")[0]["text"],levelCandidate))
+		// 	element.css("background-color",eval("LEVEL"+(levelCandidate+1)+"BACKCOLOR"))
+		// 	element.find(".txt").css("color",eval("LEVEL"+(levelCandidate+1)+"COLOR"))
+		// }
+		
+
+
+	})
+
+
+	function recoverFirstCell(level){
+		var i = findCurrentFirstOrderCell(level)["i"]
+		var j = findCurrentFirstOrderCell(level)["j"]
+		var element = findElementByIJ(i,j)
+				
+		if(!(eval("level"+(level+1)+"OrderArr")[0]["text"] == /[1-9]/.exec(element.find(".txt").text())[0])){
+			//证明此时显示的不是正常的第一个数据而是candidate数据，根据现有的candidate数据判断下一个candidate数据该怎样显示
+				
+			element.find(".txt").text(textManagerByLevel(eval("level"+(level+1)+"OrderArr")[0]["text"],level))
+			element.css("background-color",eval("LEVEL"+(level+1)+"BACKCOLOR"))
+			element.find(".txt").css("color",eval("LEVEL"+(level+1)+"COLOR"))
+		}
+
+	}
 
 	$(".deleteCandidate").click(function(){
 		var levelCandidate = $(".deleteCandidate").index(this);
@@ -673,9 +758,6 @@
 
 			return -1;
 	}
-
-
-
 
 
 	function hideHightLightByIJ(i,j){
