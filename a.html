@@ -282,14 +282,69 @@
 
 <script type="text/javascript">
 
+
+
+const level1CanvasColor = "#4CA9FC"
+
+const level1CanvasX = 50
+const level1CanvasY = 10
+const level1CanvasW = 850
+const level1CanvasH = 100
+
 startCanvas()
 
 function startCanvas(){
+drawLevel1CanvasBackGround()
+}
+
+function drawLevel1CanvasBackGround(){
     var l1 = document.getElementById('canvassample');
     var ctx = l1.getContext('2d');
 
+    //level1 area
 	ctx.fillStyle = "#00FA9A";
-	ctx.fillRect(50, 10, 850, 100);
+	ctx.fillRect(level1CanvasX, level1CanvasY, level1CanvasW, level1CanvasH);
+}
+
+function showLevel1Candidate(arr){
+	for(var i=0;i<arr.length;i++){
+			addText(arr[i],0,i)
+	}
+}
+
+function showLevel1UsingCandidate(text){
+
+	    var l1 = document.getElementById('canvassample');
+		var ctx = l1.getContext('2d');
+
+		//清除画布
+		ctx.clearRect(level1CanvasX,level1CanvasY,level1CanvasW,level1CanvasH)
+
+		drawLevel1CanvasBackGround()
+		addText(text,1,-1)
+		showLevel1Candidate(levelCandidateArr[0])
+
+}
+
+
+function addText(text,fill,i){
+    var l1 = document.getElementById('canvassample');
+    var ctx = l1.getContext('2d');
+
+	ctx.font="50px Arial";
+
+	if(fill){
+	ctx.fillStyle = level1CanvasColor
+	ctx.fillText(text,380,80);
+	}else{
+	ctx.strokeStyle = level1CanvasColor
+		if(i%2==0){
+			ctx.strokeText(text,380+Math.ceil((i+1)/2)*90,80);
+		}else{
+			ctx.strokeText(text,380-Math.ceil((i+1)/2)*90,80);
+		}
+	}
+	
 
 }
 
@@ -339,12 +394,18 @@ function startCanvas(){
 			}else{
 				return false;
 			}
+
 			addIntoLevelArr($(this).parents("tr").index(),$(this).parents("td").index(),txt)
 			addIntoLevelOrderArr($(this).parents("tr").index(),$(this).parents("td").index(),txt)
 			$(this).siblings(".txt").text(textManagerByLevel(txt,window.levelInt))
 			$(this).siblings(".txt").show()
 			$(this).hide()
-			$(this).val("")
+			$(this).val("")			
+
+		if(window.levelInt==0){
+			showLevel1UsingCandidate(level1OrderArr[0]["text"])
+		}	
+
 	})
 
 	$("table input").blur(function(){
@@ -359,6 +420,7 @@ function startCanvas(){
 
 		window.levelInt = levelInt
 		showLevel(levelInt)
+
 	})
 
 	$(".levelStart").click(function(){
@@ -529,6 +591,11 @@ function startCanvas(){
 
 		//清除表单
 		$(this).prev("input").val("")
+
+
+		if(levelCandidate==0){
+			showLevel1Candidate(levelCandidateArr[levelCandidate])
+		}
 	})
 
 
@@ -664,6 +731,16 @@ function startCanvas(){
 		$(".showCandidate").eq(levelCandidate).click()
 
 
+	    var l1 = document.getElementById('canvassample');
+		var ctx = l1.getContext('2d');
+		ctx.clearRect(level1CanvasX,level1CanvasY,level1CanvasW,level1CanvasH)
+		
+		drawLevel1CanvasBackGround()
+
+		showLevel1Candidate(levelCandidateArr[levelCandidate])
+
+		showLevel1UsingCandidate(eval("level"+(levelCandidate+1)+"OrderArr")[0]["text"])
+
 
 	})
 
@@ -706,6 +783,10 @@ function startCanvas(){
 		//删除该级别除了第一个以外的其他假设
 
 		deleteCertainLevelExcepTheFirst(levelCandidate)
+
+		if(levelCandidate==0){
+			showLevel1UsingCandidate(firstFirstOrderNum(levelCandidate))
+		}
 
 	})
 
@@ -994,7 +1075,7 @@ function startCanvas(){
 
 	function addIntoLevelOrderArr(i,j,txt){
 		if(isNaN(window.levelInt) || parseInt(window.levelInt)<0) return;
-
+		
 		var arr = ["level1OrderArr","level2OrderArr","level3OrderArr","level4OrderArr"]
 
 		cancelOtherOrderArrij(arr,i,j)
