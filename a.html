@@ -58,6 +58,7 @@
 
 </head>
 <body>
+<div style="float:left">
 <table border="1px" width="500px" height="500px">
 <tr line="0">
 	<td num="0" align="center"><span class="txt"></span><input type="text"></td>
@@ -172,8 +173,14 @@
 </tr>
 
 </table>
+</div>
 
+<div style="float:left;width:800px;height:600px;margin:7px;">
+	<h3 style="text-align:center">Assumption image</h3>
+	<canvas id="canvassample" width="740" height="540"></canvas>
+</div>
 
+<div style="clear:both"></div>
 
 <div>
 	<p>假设级别<span id="level"></span></p>
@@ -272,6 +279,23 @@
 	</p>
 </div>
 </body>
+
+<script type="text/javascript">
+
+startCanvas()
+
+function startCanvas(){
+    var l1 = document.getElementById('canvassample');
+    var ctx = l1.getContext('2d');
+
+	ctx.fillStyle = "#00FA9A";
+	ctx.fillRect(50, 10, 850, 100);
+
+}
+
+
+</script>
+
 
 <script type="text/javascript">
 
