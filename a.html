@@ -58,6 +58,7 @@
 
 </head>
 <body>
+<div style="float:left">
 <table border="1px" width="500px" height="500px">
 <tr line="0">
 	<td num="0" align="center"><span class="txt"></span><input type="text"></td>
@@ -172,8 +173,14 @@
 </tr>
 
 </table>
+</div>
 
+<div style="float:left;width:800px;height:600px;margin:7px;">
+	<h3 style="text-align:center">Assumption image</h3>
+	<canvas id="canvassample" width="740" height="540"></canvas>
+</div>
 
+<div style="clear:both"></div>
 
 <div>
 	<p>假设级别<span id="level"></span></p>
@@ -201,9 +208,9 @@
 	<input type="text">
 	<button class="addCandidate">add candidate</button>
 	<button class="showCandidate">show candidate</button>
+	<button class="hideCandidate">hide candidate</button>
 	<button class="useCandidate">use current candidate</button>
 	<button class="deleteCandidate">delete current candidate</button>
-
 	</p>
 </div>
 
@@ -215,6 +222,16 @@
 	<button class="levelEnd">show level2 end point</button>
 	<button class="levelHide">hide level2 point</button>
 	</p>
+
+	<p>
+	<input type="text">
+	<button class="addCandidate">add candidate</button>
+	<button class="showCandidate">show candidate</button>
+	<button class="hideCandidate">hide candidate</button>
+	<button class="useCandidate">use current candidate</button>
+	<button class="deleteCandidate">delete current candidate</button>
+	</p>
+
 </div>
 
 <div>
@@ -224,6 +241,15 @@
 	<button class="levelNext">show level3 next point</button>
 	<button class="levelEnd">show level3 end point</button>
 	<button class="levelHide">hide level3 point</button>
+	</p>
+
+	<p>
+	<input type="text">
+	<button class="addCandidate">add candidate</button>
+	<button class="showCandidate">show candidate</button>
+	<button class="hideCandidate">hide candidate</button>
+	<button class="useCandidate">use current candidate</button>
+	<button class="deleteCandidate">delete current candidate</button>
 	</p>
 </div>
 
@@ -235,6 +261,15 @@
 	<button class="levelEnd">show level4 end point</button>
 	<button class="levelHide">hide level4 point</button>
 	</p>
+
+	<p>
+	<input type="text">
+	<button class="addCandidate">add candidate</button>
+	<button class="showCandidate">show candidate</button>
+	<button class="hideCandidate">hide candidate</button>
+	<button class="useCandidate">use current candidate</button>
+	<button class="deleteCandidate">delete current candidate</button>
+	</p>
 </div>
 
 <div>
@@ -244,6 +279,78 @@
 	</p>
 </div>
 </body>
+
+<script type="text/javascript">
+
+
+
+const level1CanvasColor = "#4CA9FC"
+
+const level1CanvasX = 50
+const level1CanvasY = 10
+const level1CanvasW = 850
+const level1CanvasH = 100
+
+startCanvas()
+
+function startCanvas(){
+drawLevel1CanvasBackGround()
+}
+
+function drawLevel1CanvasBackGround(){
+    var l1 = document.getElementById('canvassample');
+    var ctx = l1.getContext('2d');
+
+    //level1 area
+	ctx.fillStyle = "#00FA9A";
+	ctx.fillRect(level1CanvasX, level1CanvasY, level1CanvasW, level1CanvasH);
+}
+
+function showLevel1Candidate(arr){
+	for(var i=0;i<arr.length;i++){
+			addText(arr[i],0,i)
+	}
+}
+
+function showLevel1UsingCandidate(text){
+
+	    var l1 = document.getElementById('canvassample');
+		var ctx = l1.getContext('2d');
+
+		//清除画布
+		ctx.clearRect(level1CanvasX,level1CanvasY,level1CanvasW,level1CanvasH)
+
+		drawLevel1CanvasBackGround()
+		addText(text,1,-1)
+		showLevel1Candidate(levelCandidateArr[0])
+
+}
+
+
+function addText(text,fill,i){
+    var l1 = document.getElementById('canvassample');
+    var ctx = l1.getContext('2d');
+
+	ctx.font="50px Arial";
+
+	if(fill){
+	ctx.fillStyle = level1CanvasColor
+	ctx.fillText(text,380,80);
+	}else{
+	ctx.strokeStyle = level1CanvasColor
+		if(i%2==0){
+			ctx.strokeText(text,380+Math.ceil((i+1)/2)*90,80);
+		}else{
+			ctx.strokeText(text,380-Math.ceil((i+1)/2)*90,80);
+		}
+	}
+	
+
+}
+
+
+</script>
+
 
 <script type="text/javascript">
 
@@ -287,12 +394,18 @@
 			}else{
 				return false;
 			}
+
 			addIntoLevelArr($(this).parents("tr").index(),$(this).parents("td").index(),txt)
 			addIntoLevelOrderArr($(this).parents("tr").index(),$(this).parents("td").index(),txt)
 			$(this).siblings(".txt").text(textManagerByLevel(txt,window.levelInt))
 			$(this).siblings(".txt").show()
 			$(this).hide()
-			$(this).val("")
+			$(this).val("")			
+
+		if(window.levelInt==0){
+			showLevel1UsingCandidate(level1OrderArr[0]["text"])
+		}	
+
 	})
 
 	$("table input").blur(function(){
@@ -307,6 +420,7 @@
 
 		window.levelInt = levelInt
 		showLevel(levelInt)
+
 	})
 
 	$(".levelStart").click(function(){
@@ -477,6 +591,11 @@
 
 		//清除表单
 		$(this).prev("input").val("")
+
+
+		if(levelCandidate==0){
+			showLevel1Candidate(levelCandidateArr[levelCandidate])
+		}
 	})
 
 
@@ -484,6 +603,12 @@
 		var levelCandidate = $(".addCandidate").index($(this).siblings(".addCandidate"));
 		var val = $(this).text()
 		removeParticularElementFromArray(val,levelCandidateArr[levelCandidate])
+
+		//如果该级别下第一个单元格显示的是目前即将删除的candidate的话，那么将第一个单元格的内容重新设置为levelnOrderArr[0]['text']
+		if(/[1-9]/.exec(firstFirstOrderNum(levelCandidate))[0] == val){
+			recoverFirstCell(levelCandidate)
+		}
+
 		$(this).remove()
 	})
 
@@ -525,6 +650,57 @@
 
 	})
 
+	$(".hideCandidate").click(function(){
+		var levelCandidate = $(".hideCandidate").index(this);
+		//如果没有设置该级别的假设的话则不触发
+		if(levelCandidateArr[levelCandidate].length<=0){
+			return false;
+		}
+
+		//如果该级别下第一个单元格没有数据的话则不触发
+
+		if(!eval("level"+(levelCandidate+1)+"OrderArr")[0]){
+			return false;
+		}
+
+
+				recoverFirstCell(levelCandidate)
+
+		// var i = findCurrentFirstOrderCell(levelCandidate)["i"]
+		// var j = findCurrentFirstOrderCell(levelCandidate)["j"]
+		// var element = findElementByIJ(i,j)
+
+
+		// if(!(eval("level"+(levelCandidate+1)+"OrderArr")[0]["text"] == /[1-9]/.exec(element.find(".txt").text())[0])){
+		// 	//证明此时显示的不是正常的第一个数据而是candidate数据，根据现有的candidate数据判断下一个candidate数据该怎样显示
+				
+
+
+		// 	element.find(".txt").text(textManagerByLevel(eval("level"+(levelCandidate+1)+"OrderArr")[0]["text"],levelCandidate))
+		// 	element.css("background-color",eval("LEVEL"+(levelCandidate+1)+"BACKCOLOR"))
+		// 	element.find(".txt").css("color",eval("LEVEL"+(levelCandidate+1)+"COLOR"))
+		// }
+		
+
+
+	})
+
+
+	function recoverFirstCell(level){
+		var i = findCurrentFirstOrderCell(level)["i"]
+		var j = findCurrentFirstOrderCell(level)["j"]
+		var element = findElementByIJ(i,j)
+				
+		if(!(eval("level"+(level+1)+"OrderArr")[0]["text"] == /[1-9]/.exec(element.find(".txt").text())[0])){
+			//证明此时显示的不是正常的第一个数据而是candidate数据，根据现有的candidate数据判断下一个candidate数据该怎样显示
+				
+			element.find(".txt").text(textManagerByLevel(eval("level"+(level+1)+"OrderArr")[0]["text"],level))
+			element.css("background-color",eval("LEVEL"+(level+1)+"BACKCOLOR"))
+			element.find(".txt").css("color",eval("LEVEL"+(level+1)+"COLOR"))
+		}
+
+	}
+
 	$(".deleteCandidate").click(function(){
 		var levelCandidate = $(".deleteCandidate").index(this);
 
@@ -554,6 +730,16 @@
 
 		$(".showCandidate").eq(levelCandidate).click()
 
+
+	    var l1 = document.getElementById('canvassample');
+		var ctx = l1.getContext('2d');
+		ctx.clearRect(level1CanvasX,level1CanvasY,level1CanvasW,level1CanvasH)
+		
+		drawLevel1CanvasBackGround()
+
+		showLevel1Candidate(levelCandidateArr[levelCandidate])
+
+		showLevel1UsingCandidate(eval("level"+(levelCandidate+1)+"OrderArr")[0]["text"])
 
 
 	})
@@ -597,6 +783,10 @@
 		//删除该级别除了第一个以外的其他假设
 
 		deleteCertainLevelExcepTheFirst(levelCandidate)
+
+		if(levelCandidate==0){
+			showLevel1UsingCandidate(firstFirstOrderNum(levelCandidate))
+		}
 
 	})
 
@@ -673,9 +863,6 @@
 
 			return -1;
 	}
-
-
-
 
 
 	function hideHightLightByIJ(i,j){
@@ -765,9 +952,13 @@
 			var confirm = window.confirm("level is now in "+window.levelInt+" if you want to go to level "+levelInt+" you should cancel the level that is larger that "+levelInt)
 
 			if(confirm){
+				removeUpperLevelCandidateLabelsFrom(levelInt)
+				cancelCandidateArrTo(levelInt)
 				cancelLevelTo(levelInt)
 				cancelHightLightStatusArrTo(levelInt)
 				cancelOrderLevelTo(levelInt)
+
+				
 				return true;
 			}else{
 				return false;
@@ -884,7 +1075,7 @@
 
 	function addIntoLevelOrderArr(i,j,txt){
 		if(isNaN(window.levelInt) || parseInt(window.levelInt)<0) return;
-
+		
 		var arr = ["level1OrderArr","level2OrderArr","level3OrderArr","level4OrderArr"]
 
 		cancelOtherOrderArrij(arr,i,j)
@@ -960,6 +1151,23 @@
 				//eval(arr[i]) = []
 				initialArray(arr[i])
 			}
+	}
+
+	function cancelCandidateArrTo(n){
+		for(var i=3;i>n;i--){
+			levelCandidateArr[i] = []
+		}
+	}
+
+	function removeUpperLevelCandidateLabelsFrom(n){
+		var num = 0;
+		for(var i=0;i<=n;i++){
+			num += levelCandidateArr[i].length
+		}
+
+		for(var j=$(".candidate").length-1;j>(num-1);j--){
+			$($(".candidate")[j]).click()
+		}
 	}
 
 	function cancelHightLightStatusArrTo(n){
