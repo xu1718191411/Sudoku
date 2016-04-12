@@ -58,7 +58,8 @@
 
 </head>
 <body>
-<div style="float:left">
+<div style="float:left;margin-top:0px;text-align:center">
+	<h2>Area</h2>
 <table border="1px" width="500px" height="500px">
 <tr line="0">
 	<td num="0" align="center"><span class="txt"></span><input type="text"></td>
@@ -175,7 +176,7 @@
 </table>
 </div>
 
-<div style="float:left;width:800px;height:600px;margin:7px;">
+<div style="float:left;width:800px;height:600px;margin:3px;">
 	<h3 style="text-align:center">Assumption image</h3>
 	<canvas id="canvassample" width="740" height="540"></canvas>
 </div>
@@ -286,17 +287,25 @@
 
 const level1CanvasColor = "#4CA9FC"
 
+const level2CanvasColor = "#0047ab"
+
+const level3CanvasColor = "#FF00AB"
+
+const level4CanvasColor = "#FFFFFF"
+
 const level1CanvasX = 50
 const level1CanvasY = 10
 const level1CanvasW = 850
-const level1CanvasH = 100
+const level1CanvasH = 80
 
-startCanvas()
+const level2CanvasX = 50
+const level2CanvasY = 140
+const level2CanvasW = 850
+const level2CanvasH = 80
 
-function startCanvas(){
-drawLevel1CanvasBackGround()
-}
 
+
+//画出level1的长方形
 function drawLevel1CanvasBackGround(){
     var l1 = document.getElementById('canvassample');
     var ctx = l1.getContext('2d');
@@ -306,46 +315,67 @@ function drawLevel1CanvasBackGround(){
 	ctx.fillRect(level1CanvasX, level1CanvasY, level1CanvasW, level1CanvasH);
 }
 
-function showLevel1Candidate(arr){
+
+//画出level2的长方形
+function drawLevel2CanvasBackGround(){
+    var l1 = document.getElementById('canvassample');
+    var ctx = l1.getContext('2d');
+
+    //level1 area
+	ctx.fillStyle = "#9ACD32";
+	ctx.fillRect(level2CanvasX, level2CanvasY, level2CanvasW, level2CanvasH);
+}
+
+
+function showLevelCandidate(arr,_n){
+	if(_n==1){
+		var h = 70
+	}
 	for(var i=0;i<arr.length;i++){
-			addText(arr[i],0,i)
+			addText(arr[i],0,i,h,_n)
 	}
 }
 
-function showLevel1UsingCandidate(text){
+function showLevelUsingCandidate(text,_n){
+
 
 	    var l1 = document.getElementById('canvassample');
 		var ctx = l1.getContext('2d');
 
+		if(_n==1){
+			var h = 70;
+		}else if(_n==2){
+			var h = 200;
+		}else{
+
+		}
 		//清除画布
-		ctx.clearRect(level1CanvasX,level1CanvasY,level1CanvasW,level1CanvasH)
+		ctx.clearRect(eval("level"+_n+"CanvasX"),eval("level"+_n+"CanvasY"),eval("level"+_n+"CanvasW"),eval("level"+_n+"CanvasH"))
 
-		drawLevel1CanvasBackGround()
-		addText(text,1,-1)
-		showLevel1Candidate(levelCandidateArr[0])
-
+		eval("drawLevel"+_n+"CanvasBackGround()")
+		addText(text,1,-1,h,_n)
+		showLevelCandidate(levelCandidateArr[_n-1],_n)
 }
 
 
-function addText(text,fill,i){
+function addText(text,fill,i,h,_n){
     var l1 = document.getElementById('canvassample');
     var ctx = l1.getContext('2d');
 
 	ctx.font="50px Arial";
 
 	if(fill){
-	ctx.fillStyle = level1CanvasColor
-	ctx.fillText(text,380,80);
+	ctx.fillStyle = eval("level"+_n+"CanvasColor")
+	ctx.fillText(text,380,h);
 	}else{
-	ctx.strokeStyle = level1CanvasColor
+	ctx.strokeStyle = eval("level"+_n+"CanvasColor")
 		if(i%2==0){
-			ctx.strokeText(text,380+Math.ceil((i+1)/2)*90,80);
+			ctx.strokeText(text,380+Math.ceil((i+1)/2)*90,h);
 		}else{
-			ctx.strokeText(text,380-Math.ceil((i+1)/2)*90,80);
+			ctx.strokeText(text,380-Math.ceil((i+1)/2)*90,h);
 		}
 	}
 	
-
 }
 
 
@@ -402,9 +432,8 @@ function addText(text,fill,i){
 			$(this).hide()
 			$(this).val("")			
 
-		if(window.levelInt==0){
-			showLevel1UsingCandidate(level1OrderArr[0]["text"])
-		}	
+			showLevelUsingCandidate(eval("level"+(window.levelInt+1)+"OrderArr")[0]["text"],(window.levelInt+1))
+		
 
 	})
 
@@ -593,9 +622,8 @@ function addText(text,fill,i){
 		$(this).prev("input").val("")
 
 
-		if(levelCandidate==0){
-			showLevel1Candidate(levelCandidateArr[levelCandidate])
-		}
+		showLevelCandidate(levelCandidateArr[levelCandidate],levelCandidate+1)
+		
 	})
 
 
@@ -610,7 +638,25 @@ function addText(text,fill,i){
 		}
 
 		$(this).remove()
+		reDrawLevelCandidateImage(levelCandidate)
+	
 	})
+
+	function reDrawLevelCandidateImage(n){
+		var levelCandidate = n
+	    var l1 = document.getElementById('canvassample');
+		var ctx = l1.getContext('2d');
+
+		//清除画布，因为上面的数字有改变了
+		ctx.clearRect(eval("level"+(levelCandidate+1)+"CanvasX"),eval("level"+(levelCandidate+1)+"CanvasY"),eval("level"+(levelCandidate+1)+"CanvasW"),eval("level"+(levelCandidate+1)+"CanvasH"))
+		
+		//重新画画布
+		drawLevel1CanvasBackGround()
+
+		showLevelCandidate(levelCandidateArr[levelCandidate],(levelCandidate+1))
+
+		showLevelUsingCandidate(eval("level"+(levelCandidate+1)+"OrderArr")[0]["text"],(levelCandidate+1))
+	}
 
 	$(".showCandidate").click(function(){
 		var levelCandidate = $(".showCandidate").index(this);
@@ -702,6 +748,7 @@ function addText(text,fill,i){
 	}
 
 	$(".deleteCandidate").click(function(){
+
 		var levelCandidate = $(".deleteCandidate").index(this);
 
 		//如果当前状态第一个单元格显示的不是candidate的话
@@ -730,17 +777,7 @@ function addText(text,fill,i){
 
 		$(".showCandidate").eq(levelCandidate).click()
 
-
-	    var l1 = document.getElementById('canvassample');
-		var ctx = l1.getContext('2d');
-		ctx.clearRect(level1CanvasX,level1CanvasY,level1CanvasW,level1CanvasH)
-		
-		drawLevel1CanvasBackGround()
-
-		showLevel1Candidate(levelCandidateArr[levelCandidate])
-
-		showLevel1UsingCandidate(eval("level"+(levelCandidate+1)+"OrderArr")[0]["text"])
-
+		reDrawLevelCandidateImage(levelCandidate)
 
 	})
 
@@ -785,7 +822,7 @@ function addText(text,fill,i){
 		deleteCertainLevelExcepTheFirst(levelCandidate)
 
 		if(levelCandidate==0){
-			showLevel1UsingCandidate(firstFirstOrderNum(levelCandidate))
+			showLevelUsingCandidate(firstFirstOrderNum(levelCandidate),1)
 		}
 
 	})
