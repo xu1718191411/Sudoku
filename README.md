@@ -14,5 +14,6 @@ Here we introduce the concept of candidate.Which means the candidate assumption 
 For example if you have already supposed the level1 of the value of 6 in line7 row2.But you also think in this cell the value could be 3,4 or even 8.Here you can input the correspond value in the input form before add candidate of level1 by clicking "add candidate" button of level1.
 After The candidate be added you can preview the value of candidate in correspond cell by clicking "show candidate" and delete the value of candidate of each level by clicking "delete candidate" button.
 
-Only if the 
+Only has the assumption value been added into each level can the candidate value be added into each level's candidate arrays.
+And only is the assumption value been showing can the "delete candidate" button be effective.
 
