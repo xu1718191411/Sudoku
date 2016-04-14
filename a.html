@@ -291,7 +291,7 @@ const level2CanvasColor = "#0047ab"
 
 const level3CanvasColor = "#FF00AB"
 
-const level4CanvasColor = "#FFFFFF"
+const level4CanvasColor = "#000080"
 
 const level1CanvasX = 50
 const level1CanvasY = 10
@@ -303,7 +303,15 @@ const level2CanvasY = 140
 const level2CanvasW = 850
 const level2CanvasH = 80
 
+const level3CanvasX = 50
+const level3CanvasY = 270
+const level3CanvasW = 850
+const level3CanvasH = 80
 
+const level4CanvasX = 50
+const level4CanvasY = 400
+const level4CanvasW = 850
+const level4CanvasH = 80
 
 //画出level1的长方形
 function drawLevel1CanvasBackGround(){
@@ -326,14 +334,42 @@ function drawLevel2CanvasBackGround(){
 	ctx.fillRect(level2CanvasX, level2CanvasY, level2CanvasW, level2CanvasH);
 }
 
+//画出level3的长方形
+function drawLevel3CanvasBackGround(){
+    var l1 = document.getElementById('canvassample');
+    var ctx = l1.getContext('2d');
+
+    //level1 area
+	ctx.fillStyle = "#FFA500";
+	ctx.fillRect(level3CanvasX, level3CanvasY, level3CanvasW, level3CanvasH);
+}
+
+//画出level4的长方形
+function drawLevel4CanvasBackGround(){
+    var l1 = document.getElementById('canvassample');
+    var ctx = l1.getContext('2d');
+
+    //level1 area
+	ctx.fillStyle = "#9ACD32";
+	ctx.fillRect(level4CanvasX, level4CanvasY, level4CanvasW, level4CanvasH);
+}
 
 function showLevelCandidate(arr,_n){
-	if(_n==1){
-		var h = 70
-	}
-	for(var i=0;i<arr.length;i++){
-			addText(arr[i],0,i,h,_n)
-	}
+		if(_n==1){
+			var h = 70;
+		}else if(_n==2){
+			var h = 200;
+		}else if(_n==3){
+			var h = 330;
+		}else if(_n==4){
+			var h = 460;
+		}else{
+			return false;
+		}
+
+		for(var i=0;i<arr.length;i++){
+				addText(arr[i],0,i,h,_n)
+		}
 }
 
 function showLevelUsingCandidate(text,_n){
@@ -346,8 +382,12 @@ function showLevelUsingCandidate(text,_n){
 			var h = 70;
 		}else if(_n==2){
 			var h = 200;
+		}else if(_n==3){
+			var h = 330;
+		}else if(_n==4){
+			var h = 460;
 		}else{
-
+			return false;
 		}
 		//清除画布
 		ctx.clearRect(eval("level"+_n+"CanvasX"),eval("level"+_n+"CanvasY"),eval("level"+_n+"CanvasW"),eval("level"+_n+"CanvasH"))
@@ -630,6 +670,8 @@ function addText(text,fill,i,h,_n){
 	jQuery(document).on("click",".candidate",function(){
 		var levelCandidate = $(".addCandidate").index($(this).siblings(".addCandidate"));
 		var val = $(this).text()
+
+		//从某个数组中删除某个固定值
 		removeParticularElementFromArray(val,levelCandidateArr[levelCandidate])
 
 		//如果该级别下第一个单元格显示的是目前即将删除的candidate的话，那么将第一个单元格的内容重新设置为levelnOrderArr[0]['text']
@@ -639,7 +681,7 @@ function addText(text,fill,i,h,_n){
 
 		$(this).remove()
 		reDrawLevelCandidateImage(levelCandidate)
-	
+
 	})
 
 	function reDrawLevelCandidateImage(n){
@@ -651,7 +693,11 @@ function addText(text,fill,i,h,_n){
 		ctx.clearRect(eval("level"+(levelCandidate+1)+"CanvasX"),eval("level"+(levelCandidate+1)+"CanvasY"),eval("level"+(levelCandidate+1)+"CanvasW"),eval("level"+(levelCandidate+1)+"CanvasH"))
 		
 		//重新画画布
-		drawLevel1CanvasBackGround()
+		eval("drawLevel"+(levelCandidate+1)+"CanvasBackGround()")
+
+		if(levelCandidateArr[levelCandidate].length<1 || eval("level"+(levelCandidate+1)+"OrderArr").length<1){
+			return false;
+		}
 
 		showLevelCandidate(levelCandidateArr[levelCandidate],(levelCandidate+1))
 
@@ -954,8 +1000,29 @@ function addText(text,fill,i,h,_n){
 		
 		 hightLightStatusArr = [-1,-1,-1,-1];
 		 
+ 		
+ 		//清除右侧所有逻辑图
+ 		 clearAllAssumptionImage()
+		
+
 		 delete window.levelInt
 	})
+
+	function clearAllAssumptionImage(){
+
+	    var l1 = document.getElementById('canvassample');
+		var ctx = l1.getContext('2d');
+
+		for(var i=0;i<4;i++){
+			ctx.clearRect(eval("level"+(i+1)+"CanvasX"),eval("level"+(i+1)+"CanvasY"),eval("level"+(i+1)+"CanvasW"),eval("level"+(i+1)+"CanvasH"))
+		} 	
+	}
+
+	function clearOneLevelAssumptionImage(i){
+	    var l1 = document.getElementById('canvassample');
+		var ctx = l1.getContext('2d');
+		ctx.clearRect(eval("level"+(i+1)+"CanvasX"),eval("level"+(i+1)+"CanvasY"),eval("level"+(i+1)+"CanvasW"),eval("level"+(i+1)+"CanvasH"))
+	}
 
 	function clearAllHightLight(){
 		var arr = ["level1OrderArr","level2OrderArr","level3OrderArr","level4OrderArr"]
@@ -1193,6 +1260,7 @@ function addText(text,fill,i,h,_n){
 	function cancelCandidateArrTo(n){
 		for(var i=3;i>n;i--){
 			levelCandidateArr[i] = []
+			clearOneLevelAssumptionImage(i)
 		}
 	}
 

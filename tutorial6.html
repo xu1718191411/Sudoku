@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<style type="text/css">
+			.axis test{
+				font: 10px sans-serif;
+			}
+
+			.axis path{
+				fill:Aquamarine;
+				opacity:0.1;
+				stroke:#000;
+				stroke-width:1;
+				shape-rendering:crispEdges;
+			}
+
+			.axis line{
+				stroke:#000;
+				stroke-width:1;
+				shape-rendering:crispEdges;
+			}
+
+			.line{
+				fill:none;
+				stroke:DarkGreen;
+				stroke-width:1.5px;
+			}	
+		</style>
+	</head>
+	<body>
+		<script src="http://d3js.org/d3.v3.min.js"></script>
+ 
+	    <script>
+
+	    var margin = {top:20,right:20,bottom:30,left:40}
+	    	width = 700 - margin.left - margin.right
+	    	height = 400 - margin.top - margin.bottom
+
+	    var svg = d3.select("body").append("svg")
+	    			.attr("width",width + margin.left + margin.right)
+	    			.attr("height",height + margin.top + margin.bottom)
+	    			.append("g")
+	    			.attr("transform","translate("+margin.left+","+margin.top+")")
+
+		var gdp = [
+            {年: 2007, gdp: 524, 増減: "up"},
+            {年: 2008, gdp: 518, 増減: "down"},
+            {年: 2009, gdp: 490, 増減: "down"},
+            {年: 2010, gdp: 512, 増減: "up"},
+            {年: 2011, gdp: 510, 増減: "down"},
+            {年: 2012, gdp: 517, 増減: "up"},
+            {年: 2013, gdp: 525, 増減: "up"}
+            ];
+
+        var xScale = d3.scale.linear()
+       				   .domain([2007,2014])
+       				   .range([0,width])
+
+		var yScale = d3.scale.linear()
+					   .domain([480,530])
+					   .range([height,0])
+
+	    var colorCategoryScale = d3.scale.category10()
+
+	    var xAxis = d3.svg.axis()
+	    			.scale(xScale)
+	    			.orient("bottom")
+	    			.tickSize(6,-height)
+	    			.tickFormat(function(d){
+	    				return d+"年"
+	    			})
+
+	   	var yAxis = d3.svg.axis()
+	   				.ticks(5)
+	   				.scale(yScale)
+	   				.orient("left")
+	   				.tickSize(6,-width)
+
+		var line = d3.svg.line()
+				   .x(function(d){
+				   		return xScale(d["年"])
+				   })
+				   .y(function(d){
+				   		return yScale(d["gdp"])
+				   })
+
+	    svg.selectAll("circle")
+	    			.data(gdp)
+	    			.enter()
+	    			.append("article")
+	    			.attr("r",5)
+	    			.attr("fill",function(d){
+	    				return colorCategoryScale(d["増減"])
+	    			})
+	    			.attr("cx",function(d){
+	    				return xScale(d["年"])
+	    			})
+	    			.attr("cy",function(d){
+	    				return yScale(d["gdp"])
+	    			})
+
+		svg.append("path")
+		   .datum(gdp)
+		   .attr("class","line")
+		   .attr("d",line)
+
+	    svg.append("g")
+	    	.attr("class","y axis")
+	    	.call(yAxis)
+	    	.append("text")
+	    	.attr("y",-10)
+	    	.attr("x",10)
+	    	.style("text-anchor","end")
+	    	.text("GDP(兆円)")
+
+    	svg.append("g")
+    		.attr("class","x axis")
+    		.attr("transform","translate(0,"+height+")")
+    		.call(xAxis)
+
+
+
+	    </script>
+	</body>
+</html>
