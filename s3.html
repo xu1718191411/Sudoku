@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+    <meta charset="utf-8">
+    <title>Collapsible Tree Example</title>
+    <!-- load the d3.js library --> 
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+  </head>
+
+  <body>
+        
+
+
+  </body>
+
+  <script>
+        var width = 500
+        var height = 200
+        var svg = d3.selectAll("body").append("svg").attr("width",width).attr("height",height)
+
+        var gdp = [
+            {年:2007,gdp:524,増減:"up"},
+            {年:2008,gdp:518,増減:"down"},
+            {年:2009,gdp:490,増減:"down"},
+            {年:2010,gdp:512,増減:"up"},
+            {年:2011,gdp:510,増減:"down"},
+            {年:2012,gdp:517,増減:"up"},
+            {年:2013,gdp:525,増減:"up"}
+        ]
+
+        var xScale = d3.scale.linear()
+        .domain([2007,2013])
+        .range([10,width+10])
+
+        var yScale = d3.scale.linear()
+        .domain([490,525])
+        .range([height-10,10])
+
+        var colorScale = d3.scale.linear()
+        .domain([490,525])
+        .range(["green","red"])
+
+        var colorCategoryScale = d3.scale.category10()
+
+        svg.selectAll("circle")
+        .data(gdp)
+        .enter()
+        .append("circle")
+        .attr("r",10)
+        .attr("fill",function(d){
+            return colorCategoryScale(d['増減'])
+        })
+        .attr("cx",function(d){
+            return xScale(d['年'])
+        })
+        .attr("cy",function(d){
+            return yScale(d['gdp'])
+        })
+
+  </script>
+</html>

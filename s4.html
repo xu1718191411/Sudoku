@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+    <meta charset="utf-8">
+    <title>Collapsible Tree Example</title>
+    <!-- load the d3.js library --> 
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+  </head>
+  <style>
+      .axis text{
+        font:10px sans-serif;
+      }
+
+      .axis path, .axis line{
+        fill:none;
+        stroke:#000;
+        stroke-width:2;
+      }
+  </style>
+  <body>
+        
+  </body>
+
+  <script>
+        var margin = {top:20,right:20,bottom:30,left:40}
+        var width = 700 - margin.left - margin.right
+        var height = 400 - margin.top -margin.bottom
+
+        var svg = d3.selectAll("body")
+        .append("svg")
+        .attr("width",width+margin.left+margin.right)
+        .attr("height",height+margin.top+margin.bottom)
+        .append("g")
+        .attr("transform","translate("+margin.left+","+margin.top+")")
+
+        var gdp = [
+            {年:2007,gdp:524,増減:"up"},
+            {年:2008,gdp:518,増減:"down"},
+            {年:2009,gdp:490,増減:"down"},
+            {年:2010,gdp:512,増減:"up"},
+            {年:2011,gdp:510,増減:"down"},
+            {年:2012,gdp:517,増減:"up"},
+            {年:2013,gdp:525,増減:"up"}
+        ]
+
+        var xScale = d3.scale.linear()
+        .domain([2006,2014])
+        .range([10,width+10])
+
+        var yScale = d3.scale.linear()
+        .domain([485,530])
+        .range([height+5,10])
+
+
+        var colorScale = d3.scale.linear()
+        .domain([490,525])
+        .range(["green","red"])
+
+        var colorCategoryScale = d3.scale.category10()
+
+        var xAxis = d3.svg.axis()
+        .scale(xScale)
+        .orient("bottom")
+        .tickSize(-3,-3)
+        .tickFormat(function(d){
+            return d+"年";
+        })
+
+
+        var yAxis = d3.svg.axis()
+        .scale(yScale)
+        .orient("left")
+        .tickSize(-3,3);
+
+        svg.selectAll("circle")
+        .data(gdp)
+        .enter()
+        .append("circle")
+        .attr("r",10)
+        .attr("fill",function(d){
+            return colorCategoryScale(d['増減'])
+        })
+        .attr("cx",function(d){
+            return xScale(d['年'])
+        })
+        .attr("cy",function(d){
+            return yScale(d['gdp'])+20
+        })
+
+
+        svg.append("g")
+        .attr("class","y axis")
+        .attr("transform","translate(0,10)")
+        .call(yAxis)
+        .append("text")
+        .attr("y",-20)
+        .attr("x",20)
+        .style("text-anchor","end")
+        .text("GDP(兆円)")
+
+        svg.append("g")
+        .attr("class","x axis")
+        .attr("transform","translate(-5,"+(height+20)+")")
+        .call(xAxis)
+
+  </script>
+</html>

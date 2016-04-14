@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+    <meta charset="utf-8">
+    <title>Collapsible Tree Example</title>
+    <!-- load the d3.js library --> 
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+  </head>
+
+  <body>
+        
+
+
+  </body>
+
+  <script>
+
+        var svg = d3.selectAll("body").append("svg").attr("width",500).attr("height",700)
+
+        // var dicData = [{"科目":"国語","点数":30},{"科目":"数学","点数":70},{"科目":"社会","点数":60}]
+ 
+
+        // var boxes = svg.selectAll("xxxxx")
+        // .data(dicData)
+        // .enter()
+        // .append("g");
+
+
+        // boxes.append("circle").attr("cy",100)
+        // .attr("r",10)
+        // .attr("fill","blue")
+        // .attr("cx",function(d){
+        //     return d["点数"]*2
+        // })
+
+        // boxes.append("text")
+        // .text(function(d){
+        //     return d['科目']
+        // })
+        // .attr("fill","gray")
+        // .attr("y",80)
+        // .attr("x",function(d){
+        //     return d['点数']*2
+        // })
+        // .attr("font-size",10)
+
+
+
+        var nestdData = [
+        {"科目":"国語","点数":30,"過去の点数":[20,50,10]},
+        {"科目":"数学","点数":70,"過去の点数":[96,88,73]},
+        {"科目":"社会","点数":60,"過去の点数":[76,88,66]}]
+
+        var boxes = svg.selectAll("g").data(nestdData)
+        .enter().append("g")
+
+
+        boxes.append("circle")
+        .attr("r",10)
+        .attr("fill","blue")
+        .attr("cy",function(d,i){
+            return (i+1)*50
+        })
+        .attr("cx",function(d){
+            return d['点数']*2
+        })
+
+        boxes.selectAll("rect").data(function(d){
+            return d["過去の点数"]
+        }).enter()
+        .append("rect")
+        .attr("height",10)
+        .attr('width',10)
+        .attr("fill","orange")
+        .attr("stroke","black")
+        .attr("x",function(d){
+            return d*2;
+        })
+
+
+
+
+  </script>
+</html>
